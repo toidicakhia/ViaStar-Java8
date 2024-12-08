@@ -10,9 +10,7 @@ class ViaStarPlugin: Plugin<Project> {
     override fun apply(project: Project) {
         project.run {
             tasks {
-                register("defaultJobsIfNotExist", DefaultJobsIfNotExists::class) {
-
-                }
+                register("defaultJobsIfNotExist", DefaultJobsIfNotExists::class)
 
                 register("validJobs", ValidJobs::class) {
                     dependsOn("defaultJobsIfNotExist")
@@ -22,12 +20,23 @@ class ViaStarPlugin: Plugin<Project> {
                     dependsOn("validJobs")
                 }
 
-                register("downloadVia", DownloadViaTask::class) {
+                val checkUpdateTask = register("checkBuildHasUptoDate", CheckBuildHasUptoDate::class) {
                     dependsOn("getLatestSuccessfulBuild")
                 }
 
+                register("downloadVia", DownloadViaTask::class) {
+                    dependsOn("checkBuildHasUptoDate")
+
+                    onlyIf { !checkUpdateTask.get().hasUptoDate }
+                }
+
+                register("updateViaMetadata", UpdateViaMetadata::class)
+
                 register("downgradeVia", DowngradeViaTask::class) {
                     dependsOn("downloadVia")
+                    dependsOn("updateViaMetadata")
+
+                    onlyIf { !checkUpdateTask.get().hasUptoDate }
                 }
             }
         }

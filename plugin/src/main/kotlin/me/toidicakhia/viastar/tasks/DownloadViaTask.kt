@@ -13,7 +13,6 @@ import java.net.URL
 
 open class DownloadViaTask: DefaultTask() {
 	private val gson = Gson()
-    private val JOBS = mutableListOf<String>()
     private val JVM_DOWNGRADER_URL = "https://github.com/RaphiMC/JavaDowngrader/releases/download/v1.1.2/JavaDowngrader-Standalone-1.1.2.jar"
 
     init {
@@ -26,15 +25,8 @@ open class DownloadViaTask: DefaultTask() {
         HttpUtils.downloadFile(JVM_DOWNGRADER_URL, downgraderFile)
     }
 
-    private fun downloadVia(tempFolder: File, job: String) {
-        val ciUrl = "https://ci.viaversion.com/job/$job/api/json?tree=lastSuccessfulBuild[number,url]"
-        val ciResponse = HttpUtils.get(ciUrl)
-
-        if (ciResponse.statusCode != 200)
-            throw RuntimeException("Failed when getting ${job}\'s CI.")
-
-        val ciObject = gson.fromJson(ciResponse.text, JenkinsLastSuccessBuild::class.java)
-        val buildUrl = ciObject.lastSuccessfulBuild.url
+    private fun downloadVia(tempFolder: File, job: String, buildNumber: Int) {
+        val buildUrl = "https://ci.viaversion.com/job/$job/$buildNumber/"
         val buildApiUrl = "$buildUrl/api/json?tree=artifacts[relativePath,fileName]"
         val buildResponse = HttpUtils.get(buildApiUrl)
 
@@ -51,21 +43,13 @@ open class DownloadViaTask: DefaultTask() {
         HttpUtils.downloadFile(artifactUrl, artifactFile)
     }
 
-    private fun getJobs() {
-        val viaNeedDowngradeFile = File(project.rootDir, "vianeeddowngrade.txt")
+    private fun getJobs(): Map<String, Int> {
+        val latestViaStarFile = File(project.rootDir, "latest_viastar.json")
 
-        if (!viaNeedDowngradeFile.exists()) {
-            JOBS.add("ViaVersion")
-            JOBS.add("ViaBackwards")
-            JOBS.add("ViaRewind")
-            return
-        }
+        val latestViaStarText = latestViaStarFile.bufferedReader().use { it.readText() }
+        val latestJsonObject = gson.fromJson(latestViaStarText, JobsMetadata::class.java)
 
-        val text = viaNeedDowngradeFile.bufferedReader().use { it.readText() }
-        println(text)
-        text.split("\n").forEach {
-            JOBS.add(it.trim())
-        }
+        return latestJsonObject.jobs
     }
 
     @TaskAction
@@ -79,10 +63,11 @@ open class DownloadViaTask: DefaultTask() {
 
         tempDir.mkdirs()
 
-        getJobs()
+        val jobs = getJobs()
 
-    	for (job in JOBS)
-            downloadVia(tempDir, job)
+    	for ((job, buildNumber) in jobs)
+            downloadVia(tempDir, job, buildNumber)
+
         downloadJvmDowngrader(tempDir)
     }
 
