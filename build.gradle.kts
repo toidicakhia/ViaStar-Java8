@@ -26,9 +26,9 @@ publishing {
 }
 
 tasks.named("build") {
-    dependsOn("downgradeVia")
+    dependsOn("getViaDowngraded")
 }
 
 tasks.named("publishToMavenLocal") {
-    dependsOn("build")
+    dependsOn("downgradeVia")
 }
