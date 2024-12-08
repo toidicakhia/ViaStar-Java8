@@ -1,5 +1,6 @@
 plugins {
     `maven-publish`
+    id("me.toidicakhia.viastar")
     java
 }
 
@@ -13,4 +14,8 @@ publishing {
     repositories {
         mavenLocal()
     }
+}
+
+tasks.named("build") {
+    dependsOn("getViaDowngraded")
 }
