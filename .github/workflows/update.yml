@@ -3,7 +3,7 @@ name: Update Via*
 on:
   workflow_dispatch:
   schedule:
-    - cron: "* * * * *"
+    - cron: "0 * * * *"
 
 jobs:
   build:
