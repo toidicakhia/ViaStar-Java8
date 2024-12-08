@@ -3,8 +3,9 @@ name: Build Via*
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-
+    branches: "*"
+  pull_request:
+    branches: "*"
 jobs:
   build:
     runs-on: ubuntu-latest
