@@ -17,7 +17,7 @@ open class DownloadViaTask: DefaultTask() {
     private val JVM_DOWNGRADER_URL = "https://github.com/RaphiMC/JavaDowngrader/releases/download/v1.1.2/JavaDowngrader-Standalone-1.1.2.jar"
 
     init {
-        group = "Bloom Gradle"
+        group = "ViaStar"
         description = "Download Via libraries."
     }
 
