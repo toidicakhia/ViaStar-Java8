@@ -13,8 +13,7 @@ publishing {
             group = "me.toidicakhia"
             version = "dev"
 
-            file("build/libs").listFiles().filter { !it.name.contains("viastar", true) }
-                .forEach { file ->
+            file("build/libs").listFiles().filter { !it.name.contains("viastar", true) }.forEach { file ->
                     artifact(file) {
                         val fileNameMetadata = file.nameWithoutExtension.split("-")
 
