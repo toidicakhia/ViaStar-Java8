@@ -26,10 +26,14 @@ jobs:
           job-id: jdk8
           arguments: build --no-build-cache
           gradle-version: wrapper
-      - name: Commit
+      - name: Commit and push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "automation"
-          git add .
-          git commit -m "GitHub Actions: New update"
+          if [[ `git status --porcelain` ]]; then
+            git add .
+            git commit -m "GitHub Actions: New update"
+          else
+            echo "No changes to commit."
+          fi
       
