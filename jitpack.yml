@@ -1,10 +1,7 @@
-jdk:
-  - openjdk8
-
 build:
   commands:
-    - ./gradlew getViaDowngraded
-    - ./gradlew publish
+    - gradlew downgradeVia
+    - gradlew publish
 
 publish:
   version: ${tag}
