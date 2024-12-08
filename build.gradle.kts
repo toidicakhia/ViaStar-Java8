@@ -8,7 +8,16 @@ publishing {
     publications {
         create<MavenPublication>("mavenLocal") {
             from(components["java"])
+
             artifactId = "viastar-java8"
+            group = "me.toidicakhia"
+
+            file("build/libs").listFiles()?.forEach { file ->
+                artifact(file) {
+                    classifier = file.nameWithoutExtension.split("-").first()
+                    extension = file.extension
+                }
+            }
         }
     }
     repositories {
@@ -17,9 +26,9 @@ publishing {
 }
 
 tasks.named("build") {
-    dependsOn("getViaDowngraded")
+    dependsOn("downgradeVia")
 }
 
 tasks.named("publishToMavenLocal") {
-    dependsOn("getViaDowngraded")
+    dependsOn("build")
 }

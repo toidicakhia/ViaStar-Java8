@@ -10,7 +10,8 @@ data class JenkinsJobMeta(
 )
 
 data class JenkinsBuild(
-	val artifacts: List<JenkinsArtifact>
+	val artifacts: List<JenkinsArtifact>,
+	val changeSet: JenkinsChangeSet
 )
 
 data class JenkinsArtifact(
@@ -29,4 +30,12 @@ data class Job(
 
 data class JobsMetadata(
 	val jobs: Map<String, Int>
+)
+
+data class JenkinsChangeSet(
+	val items: List<JenkinsCommit>,
+)
+
+data class JenkinsCommit(
+	val commitId: String
 )

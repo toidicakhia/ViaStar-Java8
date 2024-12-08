@@ -20,7 +20,9 @@ class ViaStarPlugin: Plugin<Project> {
                     dependsOn("validJobs")
                 }
 
-                register("getLatestSuccessfulBuild", GetLatestSuccessfulBuild::class)
+                register("getLatestSuccessfulBuild", GetLatestSuccessfulBuild::class) {
+                    dependsOn("updateViaMetadata")
+                }
 
                 val checkUpdateTask = register("checkBuildHasUptoDate", CheckBuildHasUptoDate::class) {
                     dependsOn("getLatestSuccessfulBuild")

@@ -1,4 +1,4 @@
-name: Check update Via*
+name: Update Via*
 
 on:
   workflow_dispatch:
@@ -24,13 +24,12 @@ jobs:
         name: Build
         with:
           job-id: jdk8
-          arguments: updateViaMetadata --no-build-cache
+          arguments: build --no-build-cache
           gradle-version: wrapper
-      - name: Commit and push changes
+      - name: Commit
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "automation"
           git add .
           git commit -m "GitHub Actions: New update"
-          git push
       

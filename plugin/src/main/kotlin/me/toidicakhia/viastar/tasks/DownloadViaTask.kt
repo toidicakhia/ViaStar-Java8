@@ -27,7 +27,7 @@ open class DownloadViaTask: DefaultTask() {
 
     private fun downloadVia(tempFolder: File, job: String, buildNumber: Int) {
         val buildUrl = "https://ci.viaversion.com/job/$job/$buildNumber/"
-        val buildApiUrl = "$buildUrl/api/json?tree=artifacts[relativePath,fileName]"
+        val buildApiUrl = "$buildUrl/api/json?tree=artifacts[relativePath,fileName],changeSet[items[commitId]]"
         val buildResponse = HttpUtils.get(buildApiUrl)
 
         if (buildResponse.statusCode != 200)
@@ -38,8 +38,12 @@ open class DownloadViaTask: DefaultTask() {
             !it.fileName.contains("javadoc", true) && !it.fileName.contains("sources", true)
         }
 
+        val commitId = buildObject.changeSet.items.first().commitId.substring(0, 7)
+        val fileName = if (artifact.fileName.contains("SNAPSHOT", true)) 
+            "$job-$commitId.jar" else artifact.fileName
+
         val artifactUrl = "$buildUrl/artifact/${artifact.relativePath}"
-        val artifactFile = File(tempFolder, artifact.fileName)
+        val artifactFile = File(tempFolder, fileName)
         HttpUtils.downloadFile(artifactUrl, artifactFile)
     }
 
