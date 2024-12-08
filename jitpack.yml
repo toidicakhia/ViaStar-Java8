@@ -1,0 +1,10 @@
+jdk:
+  - openjdk8
+
+build:
+  commands:
+    - ./gradlew getViaDowngraded
+    - ./gradlew publish
+
+publish:
+  version: ${tag}

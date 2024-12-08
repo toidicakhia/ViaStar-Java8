@@ -13,17 +13,15 @@ publishing {
             group = "me.toidicakhia"
             version = "dev"
 
-            file("build/libs").listFiles().filter { !it.name.contains("viastar", true) }.forEach { file ->
-                    artifact(file) {
-                        val fileNameMetadata = file.nameWithoutExtension.split("-")
+            file("build/libs").listFiles()?.filter { !it.name.contains("viastar", true) }?.forEach {
+                artifact(it) {
+                    val fileNameMetadata = it.nameWithoutExtension.split("-")
 
-                        classifier = fileNameMetadata[0]
-                        extension = file.extension
-                        version = fileNameMetadata[1]
-                    }
+                    classifier = fileNameMetadata[0]
+                    extension = it.extension
+                    version = fileNameMetadata[1]
                 }
-
-            println()
+            }
         }
     }
     repositories {
@@ -33,8 +31,4 @@ publishing {
 
 tasks.named("build") {
     dependsOn("getViaDowngraded")
-}
-
-tasks.named("publishToMavenLocal") {
-    dependsOn("downgradeVia")
 }
