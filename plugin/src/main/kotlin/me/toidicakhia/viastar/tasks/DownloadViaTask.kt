@@ -13,7 +13,7 @@ import java.net.URL
 
 open class DownloadViaTask: DefaultTask() {
 	private val gson = Gson()
-    private val JOBS = arrayOf("ViaVersion", "ViaBackwards", "ViaRewind")
+    private val JOBS = mutableListOf<String>()
     private val JVM_DOWNGRADER_URL = "https://github.com/RaphiMC/JavaDowngrader/releases/download/v1.1.2/JavaDowngrader-Standalone-1.1.2.jar"
 
     init {
@@ -31,9 +31,9 @@ open class DownloadViaTask: DefaultTask() {
         val ciResponse = HttpUtils.get(ciUrl)
 
         if (ciResponse.statusCode != 200)
-            throw RuntimeException("Failed when getting $job's CI.")
+            throw RuntimeException("Failed when getting ${job}\'s CI.")
 
-        val ciObject = gson.fromJson(ciResponse.text, JenkinsJob::class.java)
+        val ciObject = gson.fromJson(ciResponse.text, JenkinsLastSuccessBuild::class.java)
         val buildUrl = ciObject.lastSuccessfulBuild.url
         val buildApiUrl = "$buildUrl/api/json?tree=artifacts[relativePath,fileName]"
         val buildResponse = HttpUtils.get(buildApiUrl)
@@ -42,17 +42,34 @@ open class DownloadViaTask: DefaultTask() {
             throw RuntimeException("Failed when getting $job's latest build.")
 
         val buildObject = gson.fromJson(buildResponse.text, JenkinsBuild::class.java)
-        val artifact = buildObject.artifacts.first()
+        val artifact = buildObject.artifacts.first {
+            !it.fileName.contains("javadoc", true) && !it.fileName.contains("sources", true)
+        }
 
         val artifactUrl = "$buildUrl/artifact/${artifact.relativePath}"
         val artifactFile = File(tempFolder, artifact.fileName)
         HttpUtils.downloadFile(artifactUrl, artifactFile)
     }
 
-    @TaskAction
-    fun download() {
-        println("Downloading Via libraries...")
+    private fun getJobs() {
+        val viaNeedDowngradeFile = File(project.rootDir, "vianeeddowngrade.txt")
 
+        if (!viaNeedDowngradeFile.exists()) {
+            JOBS.add("ViaVersion")
+            JOBS.add("ViaBackwards")
+            JOBS.add("ViaRewind")
+            return
+        }
+
+        val text = viaNeedDowngradeFile.bufferedReader().use { it.readText() }
+        println(text)
+        text.split("\n").forEach {
+            JOBS.add(it.trim())
+        }
+    }
+
+    @TaskAction
+    fun run() {
         val tempDir = File(project.rootDir, "temp")
         if (!tempDir.exists())
             tempDir.mkdirs()
@@ -61,6 +78,8 @@ open class DownloadViaTask: DefaultTask() {
             tempDir.deleteRecursively()
 
         tempDir.mkdirs()
+
+        getJobs()
 
     	for (job in JOBS)
             downloadVia(tempDir, job)

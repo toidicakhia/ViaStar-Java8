@@ -27,5 +27,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ViaStar
+          name: ViaStar-Java8
           path: build/libs/*.jar

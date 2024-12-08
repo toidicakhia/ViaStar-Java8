@@ -40,8 +40,6 @@ open class DowngradeViaTask: DefaultTask() {
 
     @TaskAction
     fun run() {
-        println("Downloading Via libraries...")
-
         val tempDir = File(project.rootDir, "temp")
         if (!tempDir.exists())
             throw RuntimeException("Temp Via* folder not found.")
