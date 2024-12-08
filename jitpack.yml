@@ -1,0 +1,12 @@
+jdk:
+  - openjdk8
+
+build:
+  script:
+    - echo "Running custom build script"
+    - ./gradlew build publishToMavenLocal
+
+publish:
+  script:
+    - echo "Running publish script"
+    - ./gradlew publish
