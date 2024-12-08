@@ -1,4 +1,4 @@
-name: Update Via*
+name: Check update Via*
 
 on:
   workflow_dispatch:

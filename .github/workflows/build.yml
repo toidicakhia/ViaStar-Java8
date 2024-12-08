@@ -1,4 +1,4 @@
-name: Update Via*
+name: Build Via*
 
 on:
   workflow_dispatch:
