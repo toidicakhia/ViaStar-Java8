@@ -24,8 +24,16 @@ publishing {
             }
         }
     }
+
     repositories {
-        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/toidicakhia/ViaStar-Java8")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 build:
   commands:
+    - echo "Downgrade Via*"
     - gradlew downgradeVia
+    - echo "Publish maven"
     - gradlew publish
 
 publish:

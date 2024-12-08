@@ -1,0 +1,25 @@
+name: Publish Via*
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Java setup
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: 8
+          check-latest: true
+      - name: Build
+        run: ./gradlew build
+      - name: Publish maven
+        run: ./gradlew publish
+      
