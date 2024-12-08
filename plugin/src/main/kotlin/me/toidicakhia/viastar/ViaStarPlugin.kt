@@ -16,9 +16,11 @@ class ViaStarPlugin: Plugin<Project> {
                     dependsOn("defaultJobsIfNotExist")
                 }
 
-                register("getLatestSuccessfulBuild", GetLatestSuccessfulBuild::class) {
+                register("updateViaMetadata", UpdateViaMetadata::class) {
                     dependsOn("validJobs")
                 }
+
+                register("getLatestSuccessfulBuild", GetLatestSuccessfulBuild::class)
 
                 val checkUpdateTask = register("checkBuildHasUptoDate", CheckBuildHasUptoDate::class) {
                     dependsOn("getLatestSuccessfulBuild")
@@ -30,13 +32,18 @@ class ViaStarPlugin: Plugin<Project> {
                     onlyIf { !checkUpdateTask.get().hasUptoDate }
                 }
 
-                register("updateViaMetadata", UpdateViaMetadata::class)
-
                 register("downgradeVia", DowngradeViaTask::class) {
                     dependsOn("downloadVia")
-                    dependsOn("updateViaMetadata")
 
                     onlyIf { !checkUpdateTask.get().hasUptoDate }
+                }
+
+                register("getViaDowngraded") {
+                    group = "ViaStar"
+                    description = "Get Via* downgraded"
+
+                    dependsOn("updateViaMetadata")
+                    dependsOn("downgradeVia")
                 }
             }
         }

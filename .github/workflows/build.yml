@@ -2,8 +2,8 @@ name: Update Via*
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 * * * *"
+  push:
+    branches: [main]
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
         name: Build
         with:
           job-id: jdk8
-          arguments: build --no-build-cache
+          arguments: downgradeVia --no-build-cache
           gradle-version: wrapper
       - name: Upload artifact
         uses: actions/upload-artifact@v4

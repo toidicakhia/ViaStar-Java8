@@ -9,5 +9,5 @@ plugins {
 }
 
 tasks.named("build") {
-    dependsOn("downgradeVia")
+    dependsOn("getViaDowngraded")
 }

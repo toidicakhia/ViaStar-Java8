@@ -1,0 +1,37 @@
+name: Update Via*
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Java setup
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: 8
+          check-latest: true
+      - uses: burrunan/gradle-cache-action@v1
+        name: Build
+        with:
+          job-id: jdk8
+          arguments: updateViaMetadata --no-build-cache
+          gradle-version: wrapper
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "GitHub Actions: New update"
+          git push origin ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
